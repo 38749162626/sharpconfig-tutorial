@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SharpConfig - 简单强大的 .NET CFG/INI 配置库 | 详细教程</title>
+    <title>SharpConfig - .NET CFG/INI 配置库 · 完整教程</title>
+    <!-- 引入 Google Fonts 加快字体加载，提升视觉动感 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400..600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-code: #1e1e2e;
+            --bg-secondary: #f8f9fc;
+            --bg-code: #1a1b2e;
             --text: #1a1a2e;
             --text-secondary: #5a5a7a;
             --text-code: #cdd6f4;
             --accent: #6c5ce7;
             --accent-hover: #5a4bd1;
             --accent-light: #eef0ff;
-            --border: #e0e0e8;
-            --border-light: #f0f0f5;
+            --accent-glow: rgba(108, 92, 231, 0.3);
+            --border: #e2e4ef;
+            --border-light: #f0f0f8;
             --success: #10b981;
             --warning: #f59e0b;
-            --radius: 10px;
-            --radius-sm: 6px;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.06);
             --max-width: 1020px;
-            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
-            --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -43,28 +48,47 @@
         body {
             font-family: var(--font-sans);
             color: var(--text);
-            background: var(--bg);
+            background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
             line-height: 1.7;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        /* ── Header / Hero ─────────────────────── */
+        /* ── 全局淡入动画 ──────────────── */
+        .fade-section {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+            will-change: opacity, transform;
+        }
+        .fade-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Hero 动态背景与玻璃效果 ──────── */
         .hero {
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 30%, #1e1e40 60%, #0d0d1f 100%);
+            background: radial-gradient(ellipse 100% 60% at 50% 30%, #1e1b4b 0%, #0f0f23 60%);
             color: #ffffff;
-            padding: 70px 24px 60px;
+            padding: 80px 24px 70px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            isolation: isolate;
         }
-
         .hero::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(108, 92, 231, 0.15) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            background: 
+              radial-gradient(circle at 20% 80%, rgba(108,92,231,0.2) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 50%);
             pointer-events: none;
+            animation: heroPulse 8s infinite alternate;
+        }
+        @keyframes heroPulse {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.02); }
         }
 
         .hero-badge {
@@ -72,72 +96,80 @@
             align-items: center;
             gap: 8px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50px;
-            padding: 6px 18px;
+            padding: 6px 20px;
             font-size: 0.875rem;
             letter-spacing: 0.02em;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(12px);
+            animation: fadeInDown 0.8s ease;
         }
-
         .hero-badge .dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background: #10b981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
             animation: pulse-dot 2s infinite;
         }
-
         @keyframes pulse-dot {
-            0%,
-            100% {
-                box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 18px rgba(16, 185, 129, 1);
-            }
+            0%, 100% { box-shadow: 0 0 8px rgba(16,185,129,0.6); }
+            50% { box-shadow: 0 0 22px rgba(16,185,129,1); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero h1 {
-            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-size: clamp(2.4rem, 6vw, 3.6rem);
             font-weight: 800;
             letter-spacing: -0.03em;
-            margin: 22px 0 12px;
+            margin: 24px 0 12px;
             position: relative;
             z-index: 1;
             background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero p.subtitle {
             font-size: 1.15rem;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 620px;
-            margin: 0 auto 28px;
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 640px;
+            margin: 0 auto 32px;
             position: relative;
             z-index: 1;
             line-height: 1.6;
+            animation: fadeInUp 0.8s 0.1s ease forwards;
+            opacity: 0;
         }
 
         .hero-links {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 14px;
             justify-content: center;
             position: relative;
             z-index: 1;
+            animation: fadeInUp 0.8s 0.2s ease forwards;
+            opacity: 0;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            padding: 10px 24px;
+            padding: 11px 26px;
             border-radius: 50px;
             font-weight: 600;
             font-size: 0.95rem;
@@ -146,47 +178,57 @@
             cursor: pointer;
             border: none;
             font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn:hover::after {
+            opacity: 1;
         }
 
         .btn-primary {
             background: var(--accent);
             color: #fff;
+            box-shadow: 0 4px 16px var(--accent-glow);
         }
         .btn-primary:hover {
             background: var(--accent-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(108,92,231,0.45);
         }
 
         .btn-outline {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.05);
             color: #fff;
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
         }
         .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
         }
 
-        .btn-ghost {
-            background: transparent;
-            color: var(--accent);
-            border: 1.5px solid var(--accent);
-        }
-        .btn-ghost:hover {
-            background: var(--accent-light);
-        }
-
-        /* ── Sticky Nav ────────────────────────── */
+        /* ── 粘性导航增加模糊与动态下划线 ── */
         .nav-bar {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            transition: background var(--transition);
+            transition: box-shadow 0.3s;
+        }
+        .nav-bar.scrolled {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.05);
         }
 
         .nav-inner {
@@ -194,19 +236,17 @@
             margin: 0 auto;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 2px;
             padding: 0 24px;
             overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-        .nav-inner::-webkit-scrollbar {
-            display: none;
-        }
+        .nav-inner::-webkit-scrollbar { display: none; }
 
         .nav-inner a {
             display: inline-block;
-            padding: 14px 16px;
+            padding: 15px 17px;
             font-size: 0.875rem;
             font-weight: 550;
             color: var(--text-secondary);
@@ -215,773 +255,489 @@
             border-bottom: 2px solid transparent;
             transition: all var(--transition);
             letter-spacing: 0.01em;
+            position: relative;
+        }
+        .nav-inner a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.3s;
         }
         .nav-inner a:hover,
         .nav-inner a.active {
             color: var(--accent);
-            border-bottom-color: var(--accent);
+            border-bottom-color: transparent;
+        }
+        .nav-inner a.active::after,
+        .nav-inner a:hover::after {
+            transform: scaleX(1);
         }
 
-        /* ── Main Content ──────────────────────── */
+        /* ── 主内容区 ──────────────────── */
         .container {
             max-width: var(--max-width);
             margin: 0 auto;
-            padding: 48px 24px 80px;
+            padding: 50px 24px 80px;
         }
 
         section {
-            margin-bottom: 56px;
+            margin-bottom: 60px;
         }
 
         h2 {
-            font-size: 1.75rem;
+            font-size: 1.8rem;
             font-weight: 750;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             letter-spacing: -0.02em;
             color: var(--text);
+            padding-bottom: 12px;
             border-bottom: 2px solid var(--border-light);
-            padding-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 40%;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
         }
 
         h3 {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 680;
-            margin: 32px 0 10px;
-            color: var(--text);
+            margin: 36px 0 12px;
         }
 
-        h4 {
-            font-size: 1.05rem;
-            font-weight: 650;
-            margin: 22px 0 6px;
-        }
-
-        p {
-            margin-bottom: 14px;
-            color: var(--text-secondary);
-        }
-
-        /* ── Feature Grid ──────────────────────── */
+        /* ── 功能卡片网格 + 悬停动感 ──── */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin: 20px 0;
+            gap: 20px;
+            margin: 24px 0;
         }
-
         .feature-card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px 20px;
-            transition: all var(--transition);
+            padding: 26px 22px;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            cursor: default;
         }
         .feature-card:hover {
             border-color: var(--accent);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+            box-shadow: 0 18px 38px rgba(108,92,231,0.08);
+            transform: translateY(-4px);
+            background: #ffffff;
         }
 
-        .feature-card .icon {
-            font-size: 1.6rem;
-            margin-bottom: 8px;
-        }
-
-        .feature-card h4 {
-            margin: 0 0 4px;
-            font-size: 1rem;
-            font-weight: 680;
-        }
-        .feature-card p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* ── Code Blocks ───────────────────────── */
+        /* ── 代码块增加顶部光效 ────────── */
         .code-block {
             background: var(--bg-code);
             color: var(--text-code);
             border-radius: var(--radius);
             padding: 20px 24px;
-            margin: 16px 0;
+            margin: 20px 0;
             overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.875rem;
-            line-height: 1.65;
+            line-height: 1.7;
             position: relative;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: box-shadow 0.3s;
+        }
+        .code-block:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+        }
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), #10b981, var(--accent));
+            opacity: 0.7;
         }
 
-        .code-block .lang-tag {
+        .lang-tag {
             position: absolute;
-            top: 10px;
-            right: 16px;
+            top: 12px;
+            right: 18px;
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: rgba(205, 214, 244, 0.45);
+            color: rgba(205,214,244,0.5);
             font-family: var(--font-sans);
             font-weight: 600;
         }
 
-        /* Syntax highlighting */
-        .kw {
-            color: #cba6f7;
-            font-weight: 600;
-        }
-        .str {
-            color: #a6e3a1;
-        }
-        .cmt {
-            color: #6c7086;
-            font-style: italic;
-        }
-        .num {
-            color: #fab387;
-        }
-        .fn {
-            color: #89b4fa;
-        }
-        .type {
-            color: #f9e2af;
-        }
-        .prop {
-            color: #89dceb;
-        }
-        .op {
-            color: #89b4fa;
-        }
+        /* 语法高亮 */
+        .kw { color: #cba6f7; font-weight: 600; }
+        .str { color: #a6e3a1; }
+        .cmt { color: #6c7086; font-style: italic; }
+        .num { color: #fab387; }
+        .fn { color: #89b4fa; }
+        .type { color: #f9e2af; }
+        .prop { color: #89dceb; }
 
-        /* ── Tables ────────────────────────────── */
+        /* ── 表格优化 ──────────────────── */
         .table-wrap {
             overflow-x: auto;
-            margin: 18px 0;
+            margin: 20px 0;
             border-radius: var(--radius);
             border: 1px solid var(--border);
+            background: #fff;
+            box-shadow: var(--shadow);
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
             min-width: 600px;
         }
-
         thead {
             background: var(--bg-secondary);
         }
-
         th {
             text-align: left;
-            padding: 12px 16px;
+            padding: 14px 18px;
             font-weight: 650;
             font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
             color: var(--text-secondary);
             border-bottom: 2px solid var(--border);
         }
-
         td {
-            padding: 10px 16px;
+            padding: 12px 18px;
             border-bottom: 1px solid var(--border-light);
-            vertical-align: top;
         }
-        td:first-child {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            color: var(--accent);
-            font-weight: 600;
-        }
-        td:last-child {
-            color: var(--text-secondary);
+        tr:last-child td { border-bottom: none; }
+        tr:hover td {
+            background: #fafaff;
         }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* ── Callout / Tip ─────────────────────── */
+        /* ── Callout 卡片 ────────────── */
         .callout {
             border-left: 4px solid var(--accent);
-            background: var(--accent-light);
+            background: #f5f3ff;
             border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            padding: 14px 18px;
-            margin: 18px 0;
-            font-size: 0.92rem;
+            padding: 16px 20px;
+            margin: 22px 0;
+            font-size: 0.95rem;
             color: #3d356e;
+            animation: subtleGlow 3s infinite alternate;
         }
-        .callout strong {
-            color: var(--accent);
-        }
-
-        .callout.warning {
-            border-left-color: var(--warning);
-            background: #fffbeb;
-            color: #7a5d00;
-        }
-        .callout.warning strong {
-            color: #b45309;
+        @keyframes subtleGlow {
+            from { box-shadow: 0 0 0 rgba(108,92,231,0); }
+            to { box-shadow: 0 0 14px rgba(108,92,231,0.08); }
         }
 
-        /* ── Footer ────────────────────────────── */
+        /* ── 页脚 ────────────────────── */
         footer {
             text-align: center;
-            padding: 32px 24px;
+            padding: 36px 24px;
             border-top: 1px solid var(--border);
             color: var(--text-secondary);
             font-size: 0.85rem;
-        }
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
+            background: #fafbff;
         }
 
-        /* ── Responsive ────────────────────────── */
-        @media (max-width: 640px) {
+        /* ── 移动端适配加强 ──────────── */
+        @media (max-width: 768px) {
             .hero {
-                padding: 48px 18px 40px;
+                padding: 60px 18px 50px;
             }
             .hero h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             .container {
-                padding: 28px 16px 48px;
+                padding: 32px 16px 48px;
             }
             .nav-inner a {
-                padding: 12px 10px;
+                padding: 12px 11px;
                 font-size: 0.8rem;
             }
             .code-block {
-                padding: 16px;
-                font-size: 0.78rem;
+                padding: 16px 14px;
+                font-size: 0.8rem;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  HERO SECTION                                -->
-    <!-- ═══════════════════════════════════════════ -->
-    <header class="hero">
-        <span class="hero-badge"><span class="dot"></span> v4.1 · 最新版本 · 2026年4月</span>
-        <h1>SharpConfig</h1>
-        <p class="subtitle">
-            简单、强大、轻量级的 .NET CFG/INI 配置库。<br>
-            支持文本与二进制格式，零依赖，完全可移植。
+<!-- ═══════════ HERO ═══════════ -->
+<header class="hero">
+    <span class="hero-badge"><span class="dot"></span> v4.1 · 2026年4月</span>
+    <h1>SharpConfig</h1>
+    <p class="subtitle">
+        简单、强大、轻量级的 .NET CFG/INI 配置库。<br>
+        文本与二进制格式，零依赖，完全可移植。
+    </p>
+    <div class="hero-links">
+        <a href="https://www.nuget.org/packages/sharpconfig/" class="btn btn-primary" target="_blank" rel="noopener">
+            📦 NuGet 安装
+        </a>
+        <a href="https://github.com/cdervis/SharpConfig" class="btn btn-outline" target="_blank" rel="noopener">
+            ⭐ GitHub 仓库
+        </a>
+        <a href="https://sharpconfig.org/" class="btn btn-outline" target="_blank" rel="noopener">
+            🌐 官方网站
+        </a>
+    </div>
+</header>
+
+<!-- ═══════════ 导航 ═══════════ -->
+<nav class="nav-bar" id="navbar">
+    <div class="nav-inner">
+        <a href="#overview">概览</a>
+        <a href="#features">功能特性</a>
+        <a href="#installation">安装</a>
+        <a href="#quickstart">快速入门</a>
+        <a href="#datatypes">数据类型</a>
+        <a href="#object-mapping">对象映射</a>
+        <a href="#api-reference">API 参考</a>
+        <a href="#options">全局选项</a>
+    </div>
+</nav>
+
+<main class="container">
+
+    <!-- 概览 -->
+    <section id="overview" class="fade-section">
+        <h2>📖 项目概览</h2>
+        <p>
+            <strong>SharpConfig</strong> 是一个面向 .NET 平台的 CFG/INI 配置文件操作类库，由 <strong>Cem Dervis</strong> 创建并维护。
+            你可以使用它以<strong>文本或二进制格式</strong>读取、修改和保存配置文件及流。该库基于 <strong>.NET Standard 2.0</strong>，可在 Windows、Linux、macOS 及 Docker 中无缝运行。
         </p>
-        <div class="hero-links">
-            <a href="https://www.nuget.org/packages/sharpconfig/" class="btn btn-primary" target="_blank" rel="noopener">
-                📦 NuGet 安装
-            </a>
-            <a href="https://github.com/cdervis/SharpConfig" class="btn btn-outline" target="_blank" rel="noopener">
-                ⭐ GitHub 仓库
-            </a>
-            <a href="https://sharpconfig.org/" class="btn btn-outline" target="_blank" rel="noopener">
-                🌐 官方网站
-            </a>
-        </div>
-    </header>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  STICKY NAVIGATION                          -->
-    <!-- ═══════════════════════════════════════════ -->
-    <nav class="nav-bar" id="navbar">
-        <div class="nav-inner">
-            <a href="#overview">概览</a>
-            <a href="#features">功能特性</a>
-            <a href="#installation">安装</a>
-            <a href="#quickstart">快速入门</a>
-            <a href="#datatypes">数据类型</a>
-            <a href="#object-mapping">对象映射</a>
-            <a href="#api-reference">API 参考</a>
-            <a href="#options">全局选项</a>
-        </div>
-    </nav>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  MAIN CONTENT                               -->
-    <!-- ═══════════════════════════════════════════ -->
-    <main class="container">
-
-        <!-- ── 1. 概览 ──────────────────────────────── -->
-        <section id="overview">
-            <h2>📖 项目概览</h2>
-            <p>
-                <strong>SharpConfig</strong> 是一个面向 .NET 平台的 CFG/INI 配置文件操作类库，由 <strong>Cem Dervis</strong> 创建并维护。
-                你可以使用它以<strong>文本或二进制格式</strong>读取、修改和保存配置文件及流。该库完全兼容 .NET、.NET Core 以及 Mono Framework，并且基于
-                <strong>.NET Standard 2.0</strong> 构建，具备出色的跨平台能力，可在 Windows、Linux、macOS 以及 Docker 环境中无缝运行[reference:0][reference:1]。
-            </p>
-            <p>
-                在日常 .NET 项目开发中，操作 INI/CFG 配置文件往往需要调用 WinAPI 或自行编写繁琐的解析逻辑，数据类型转换也是一大痛点。
-                SharpConfig 的核心目标就是解决这些烦恼：它提供了一套简洁直观的 API，让你能够以面向对象的方式操作配置文件，并自动处理类型转换[reference:2]。
-            </p>
-
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <span class="icon">🧩</span>
-                    <h4>零依赖</h4>
-                    <p>不依赖任何第三方包，轻量且纯净[reference:3]</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">🌍</span>
-                    <h4>完全可移植</h4>
-                    <p>基于 .NET Standard 2.0，跨所有 .NET 平台[reference:4]</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">⚡</span>
-                    <h4>高性能</h4>
-                    <p>核心代码精简，解析速度快，资源占用极低</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">🔧</span>
-                    <h4>丰富的数据类型</h4>
-                    <p>支持字符串、整数、浮点数、布尔、数组、枚举、DateTime 等</p>
-                </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span style="font-size:1.6rem;">🧩</span>
+                <h4>零依赖</h4>
+                <p>不依赖任何第三方包，轻量纯净</p>
             </div>
-        </section>
+            <div class="feature-card">
+                <span style="font-size:1.6rem;">🌍</span>
+                <h4>完全可移植</h4>
+                <p>基于 .NET Standard 2.0，跨所有平台</p>
+            </div>
+            <div class="feature-card">
+                <span style="font-size:1.6rem;">⚡</span>
+                <h4>高性能</h4>
+                <p>核心代码精简，资源占用低</p>
+            </div>
+            <div class="feature-card">
+                <span style="font-size:1.6rem;">🔧</span>
+                <h4>丰富类型支持</h4>
+                <p>字符串、数值、布尔、数组、枚举、DateTime 等</p>
+            </div>
+        </div>
+    </section>
 
-        <!-- ── 2. 功能特性 ──────────────────────────── -->
-        <section id="features">
-            <h2>✨ 功能特性</h2>
-            <table class="table-wrap">
-                <thead>
-                    <tr>
-                        <th>特性</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
+    <!-- 功能特性 -->
+    <section id="features" class="fade-section">
+        <h2>✨ 功能特性</h2>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>特性</th><th>说明</th></tr></thead>
                 <tbody>
-                    <tr>
-                        <td>📄 格式支持</td>
-                        <td>支持标准 CFG / INI 配置文件格式，兼容节（Section）和键值对（Setting）结构[reference:5]</td>
-                    </tr>
-                    <tr>
-                        <td>💬 注释处理</td>
-                        <td>支持 <code>#</code> 和 <code>;</code> 开头的注释，可配置注释字符，支持行内注释与前置注释的忽略选项[reference:6][reference:7]</td>
-                    </tr>
-                    <tr>
-                        <td>🔢 强类型访问</td>
-                        <td>通过 <code>IntValue</code>、<code>FloatValue</code>、<code>BoolValue</code>、<code>DateTimeValue</code> 等属性直接获取强类型值，无需手动转换[reference:8]</td>
-                    </tr>
-                    <tr>
-                        <td>🗂️ 数组支持</td>
-                        <td>原生支持数组类型，使用 <code>{ 1, 2, 3 }</code> 语法定义，通过 <code>IntValueArray</code>、<code>StringValueArray</code> 等属性访问[reference:9]</td>
-                    </tr>
-                    <tr>
-                        <td>🔣 枚举支持</td>
-                        <td>可直接将配置值读取为枚举类型，如 <code>DayOfWeek day = section["Day"].GetValue&lt;DayOfWeek&gt;()</code>[reference:10][reference:11]</td>
-                    </tr>
-                    <tr>
-                        <td>🔄 对象映射</td>
-                        <td>支持将 Section 直接映射为 C# 对象（<code>ToObject&lt;T&gt;()</code>），也支持从对象创建 Section（<code>Section.FromObject()</code>）[reference:12][reference:13]</td>
-                    </tr>
-                    <tr>
-                        <td>💾 多种加载/保存方式</td>
-                        <td>支持从文件、流、字符串加载；支持保存到文件、流；文本和二进制格式均可[reference:14]</td>
-                    </tr>
-                    <tr>
-                        <td>🧠 内存中创建</td>
-                        <td>无需物理配置文件，直接在代码中动态创建 Configuration 对象并设置值[reference:15]</td>
-                    </tr>
-                    <tr>
-                        <td>🔍 大小写灵活</td>
-                        <td>默认使用 <code>OrdinalIgnoreCase</code> 进行 Section 和 Setting 名称匹配，也支持 <code>Ordinal</code> 精确匹配[reference:16]</td>
-                    </tr>
+                    <tr><td>📄 格式支持</td><td>标准 CFG/INI 格式，节(Section)与键值对(Setting)</td></tr>
+                    <tr><td>💬 注释</td><td>支持 # 和 ; 注释，可配置字符及忽略选项</td></tr>
+                    <tr><td>🔢 强类型访问</td><td>IntValue, FloatValue, BoolValue 等直接取值</td></tr>
+                    <tr><td>🗂️ 数组</td><td>原生支持数组，语法 { 1, 2, 3 }，强类型数组属性</td></tr>
+                    <tr><td>🔣 枚举</td><td>GetValue&lt;DayOfWeek&gt;() 直接解析枚举</td></tr>
+                    <tr><td>🔄 对象映射</td><td>Section ⇄ C# 对象双向转换</td></tr>
+                    <tr><td>💾 多种加载/保存</td><td>文件、流、字符串；文本与二进制格式</td></tr>
+                    <tr><td>🧠 内存创建</td><td>无需物理文件，直接动态构建配置</td></tr>
+                    <tr><td>🔍 大小写灵活</td><td>默认忽略大小写，也可精确匹配</td></tr>
                 </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <!-- ── 3. 安装 ──────────────────────────────── -->
-        <section id="installation">
-            <h2>📦 安装指南</h2>
-            <p>选择以下任意一种方式安装 SharpConfig：</p>
+    <!-- 安装 -->
+    <section id="installation" class="fade-section">
+        <h2>📦 安装指南</h2>
+        <p>通过以下任一方式安装 SharpConfig：</p>
+        <h4>.NET CLI</h4>
+        <div class="code-block"><span class="lang-tag">shell</span>dotnet add package sharpconfig</div>
+        <h4>NuGet Package Manager</h4>
+        <div class="code-block"><span class="lang-tag">powershell</span>Install-Package sharpconfig</div>
+        <div class="callout">
+            <strong>💡 提示：</strong>安装后在代码文件顶部添加 <code>using SharpConfig;</code> 即可使用。
+        </div>
+    </section>
 
-            <h4>.NET CLI</h4>
-            <div class="code-block">
-                <span class="lang-tag">shell</span>
-                dotnet add package sharpconfig
-            </div>
+    <!-- 快速入门 -->
+    <section id="quickstart" class="fade-section">
+        <h2>🚀 快速入门</h2>
+        <p>假设配置文件 <code>sample.cfg</code> 内容如下：</p>
+        <div class="code-block">
+            <span class="lang-tag">ini</span>
+            <span class="cmt"># 注释</span>
+            <span class="kw">[General]</span>
+            <span class="prop">SomeString</span> = <span class="str">Hello World!</span>
+            <span class="prop">SomeInteger</span> = <span class="num">10</span>
+            <span class="prop">SomeFloat</span> = <span class="num">20.05</span>
+            <span class="prop">SomeBoolean</span> = <span class="kw">true</span>
+            <span class="prop">SomeArray</span> = { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> }
+            <span class="prop">Day</span> = <span class="str">Monday</span>
 
-            <h4>NuGet Package Manager</h4>
-            <div class="code-block">
-                <span class="lang-tag">powershell</span>
-                Install-Package sharpconfig
-            </div>
+            <span class="kw">[Person]</span>
+            <span class="prop">Name</span> = <span class="str">Peter</span>
+            <span class="prop">Age</span> = <span class="num">50</span>
+        </div>
 
-            <h4>直接下载</h4>
-            <p>
-                你也可以从 <a href="https://github.com/cdervis/SharpConfig/releases" target="_blank" rel="noopener">GitHub Releases</a> 页面下载最新的源代码或二进制文件[reference:17]。
-            </p>
+        <h4>读取配置</h4>
+        <div class="code-block">
+            <span class="lang-tag">csharp</span>
+            <span class="kw">var</span> config = <span class="type">Configuration</span>.<span class="fn">LoadFromFile</span>(<span class="str">"sample.cfg"</span>);
+            <span class="kw">var</span> section = config[<span class="str">"General"</span>];
 
-            <div class="callout">
-                <strong>💡 提示：</strong>安装完成后，在代码文件顶部添加 <code>using SharpConfig;</code> 即可开始使用。
-            </div>
-        </section>
+            <span class="type">string</span> someString = section[<span class="str">"SomeString"</span>].<span class="prop">StringValue</span>;
+            <span class="type">int</span> someInteger = section[<span class="str">"SomeInteger"</span>].<span class="prop">IntValue</span>;
+            <span class="type">float</span> someFloat = section[<span class="str">"SomeFloat"</span>].<span class="prop">FloatValue</span>;
+            <span class="type">bool</span> someBool = section[<span class="str">"SomeBoolean"</span>].<span class="prop">BoolValue</span>;
+            <span class="type">int</span>[] someIntArray = section[<span class="str">"SomeArray"</span>].<span class="prop">IntValueArray</span>;
+            <span class="type">DayOfWeek</span> day = section[<span class="str">"Day"</span>].<span class="fn">GetValue</span>&lt;<span class="type">DayOfWeek</span>&gt;();
+        </div>
 
-        <!-- ── 4. 快速入门 ──────────────────────────── -->
-        <section id="quickstart">
-            <h2>🚀 快速入门</h2>
-            <p>假设我们有如下配置文件 <code>sample.cfg</code>：</p>
+        <h4>内存创建配置</h4>
+        <div class="code-block">
+            <span class="lang-tag">csharp</span>
+            <span class="kw">var</span> myConfig = <span class="kw">new</span> <span class="type">Configuration</span>();
+            myConfig[<span class="str">"Video"</span>][<span class="str">"Width"</span>].<span class="prop">IntValue</span> = <span class="num">1920</span>;
+            myConfig[<span class="str">"Video"</span>][<span class="str">"Height"</span>].<span class="prop">IntValue</span> = <span class="num">1080</span>;
+            myConfig[<span class="str">"Video"</span>][<span class="str">"Formats"</span>].<span class="prop">StringValueArray</span> = <span class="kw">new</span>[] { <span class="str">"RGB32"</span>, <span class="str">"RGBA32"</span> };
+            myConfig[<span class="str">"Video"</span>][<span class="str">"Fullscreen"</span>].<span class="prop">BoolValue</span> = <span class="kw">true</span>;
+        </div>
+    </section>
 
-            <div class="code-block">
-                <span class="lang-tag">ini</span>
-                <span class="cmt"># 这是一个注释</span>
-                <span class="kw">[General]</span>
-                <span class="prop">SomeString</span> = <span class="str">Hello World!</span>
-                <span class="prop">SomeInteger</span> = <span class="num">10</span>
-                <span class="prop">SomeFloat</span> = <span class="num">20.05</span>
-                <span class="prop">SomeBoolean</span> = <span class="kw">true</span>
-                <span class="prop">SomeArray</span> = { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> }
-                <span class="prop">Day</span> = <span class="str">Monday</span>
-
-                <span class="kw">[Person]</span>
-                <span class="prop">Name</span> = <span class="str">Peter</span>
-                <span class="prop">Age</span> = <span class="num">50</span>
-            </div>
-
-            <h4>读取配置</h4>
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="kw">var</span> config = <span class="type">Configuration</span>.<span class="fn">LoadFromFile</span>(<span class="str">"sample.cfg"</span>);
-                <span class="kw">var</span> section = config[<span class="str">"General"</span>];
-
-                <span class="type">string</span> someString = section[<span class="str">"SomeString"</span>].<span class="prop">StringValue</span>;
-                <span class="type">int</span> someInteger = section[<span class="str">"SomeInteger"</span>].<span class="prop">IntValue</span>;
-                <span class="type">float</span> someFloat = section[<span class="str">"SomeFloat"</span>].<span class="prop">FloatValue</span>;
-                <span class="type">bool</span> someBool = section[<span class="str">"SomeBoolean"</span>].<span class="prop">BoolValue</span>;
-                <span class="type">int</span>[] someIntArray = section[<span class="str">"SomeArray"</span>].<span class="prop">IntValueArray</span>;
-                <span class="type">DayOfWeek</span> day = section[<span class="str">"Day"</span>].<span class="fn">GetValue</span>&lt;<span class="type">DayOfWeek</span>&gt;();
-            </div>
-
-            <h4>内存中创建配置</h4>
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="kw">var</span> myConfig = <span class="kw">new</span> <span class="type">Configuration</span>();
-
-                <span class="cmt">// 自动创建 Section 和 Setting</span>
-                myConfig[<span class="str">"Video"</span>][<span class="str">"Width"</span>].<span class="prop">IntValue</span> = <span class="num">1920</span>;
-                myConfig[<span class="str">"Video"</span>][<span class="str">"Height"</span>].<span class="prop">IntValue</span> = <span class="num">1080</span>;
-                myConfig[<span class="str">"Video"</span>][<span class="str">"Formats"</span>].<span class="prop">StringValueArray</span> = <span class="kw">new</span>[] { <span class="str">"RGB32"</span>, <span class="str">"RGBA32"</span> };
-                myConfig[<span class="str">"Video"</span>][<span class="str">"Fullscreen"</span>].<span class="prop">BoolValue</span> = <span class="kw">true</span>;
-            </div>
-
-            <h4>保存配置</h4>
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                myConfig.<span class="fn">SaveToFile</span>(<span class="str">"myConfig.cfg"</span>);        <span class="cmt">// 保存为文本文件</span>
-                myConfig.<span class="fn">SaveToBinaryFile</span>(<span class="str">"myConfig.cfg"</span>);  <span class="cmt">// 保存为二进制文件</span>
-                myConfig.<span class="fn">SaveToStream</span>(myStream);                <span class="cmt">// 保存到文本流</span>
-                myConfig.<span class="fn">SaveToBinaryStream</span>(myStream);          <span class="cmt">// 保存到二进制流</span>
-            </div>
-
-            <div class="callout">
-                <strong>📌 重要行为说明：</strong><code>config["SectionName"]</code> 和 <code>section["SettingName"]</code> 是<strong>"获取或创建"</strong>（create-or-get）API。
-                如果请求的项不存在，SharpConfig 会自动创建并返回，不会抛出异常。这一特性使得动态构建配置变得极为简便[reference:18]。
-            </div>
-        </section>
-
-        <!-- ── 5. 数据类型详解 ──────────────────────── -->
-        <section id="datatypes">
-            <h2>🔢 数据类型详解</h2>
-            <p>SharpConfig 提供了丰富的强类型属性，方便直接获取各种数据类型的配置值，无需手动转换。</p>
-
-            <h3>5.1 基本类型</h3>
-            <table class="table-wrap">
-                <thead>
-                    <tr>
-                        <th>属性</th>
-                        <th>C# 类型</th>
-                        <th>配置示例</th>
-                    </tr>
-                </thead>
+    <!-- 数据类型 -->
+    <section id="datatypes" class="fade-section">
+        <h2>🔢 数据类型详解</h2>
+        <h3>基本类型</h3>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>属性</th><th>C# 类型</th><th>示例</th></tr></thead>
                 <tbody>
-                    <tr><td><code>StringValue</code></td><td>string</td><td>SomeString = Hello World!</td></tr>
+                    <tr><td><code>StringValue</code></td><td>string</td><td>SomeString = Hello</td></tr>
                     <tr><td><code>IntValue</code></td><td>int</td><td>SomeInteger = 10</td></tr>
                     <tr><td><code>FloatValue</code></td><td>float</td><td>SomeFloat = 20.05</td></tr>
-                    <tr><td><code>DoubleValue</code></td><td>double</td><td>SomeDouble = 3.14159265</td></tr>
+                    <tr><td><code>DoubleValue</code></td><td>double</td><td>SomeDouble = 3.14</td></tr>
                     <tr><td><code>BoolValue</code></td><td>bool</td><td>SomeBoolean = true</td></tr>
                     <tr><td><code>DateTimeValue</code></td><td>DateTime</td><td>SomeDate = 2026-05-01</td></tr>
                 </tbody>
             </table>
+        </div>
+        <h3>数组与枚举</h3>
+        <div class="code-block">
+            <span class="lang-tag">csharp</span>
+            <span class="cmt">// 数组</span>
+            myConfig[<span class="str">"S"</span>][<span class="str">"Arr"</span>].<span class="prop">IntValueArray</span> = <span class="kw">new</span>[] { <span class="num">1</span>, <span class="num">2</span> };
+            <span class="type">int</span>[] vals = section[<span class="str">"Arr"</span>].<span class="fn">GetValueArray</span>&lt;<span class="type">int</span>&gt;();
 
-            <h3>5.2 数组类型</h3>
-            <p>数组在配置文件中使用花括号 <code>{ }</code> 语法定义，元素之间用逗号分隔。SharpConfig 会自动解析并转换为对应类型的数组[reference:19]。</p>
+            <span class="cmt">// 枚举</span>
+            <span class="type">DayOfWeek</span> day = section[<span class="str">"Day"</span>].<span class="fn">GetValue</span>&lt;<span class="type">DayOfWeek</span>&gt;();
+        </div>
+    </section>
 
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="cmt">// 设置数组值</span>
-                myConfig[<span class="str">"Section"</span>][<span class="str">"IntArray"</span>].<span class="prop">IntValueArray</span> = <span class="kw">new</span>[] { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> };
-                myConfig[<span class="str">"Section"</span>][<span class="str">"StrArray"</span>].<span class="prop">StringValueArray</span> = <span class="kw">new</span>[] { <span class="str">"A"</span>, <span class="str">"B"</span>, <span class="str">"C"</span> };
+    <!-- 对象映射 -->
+    <section id="object-mapping" class="fade-section">
+        <h2>🔄 对象映射</h2>
+        <div class="code-block">
+            <span class="lang-tag">csharp</span>
+            <span class="kw">public class</span> <span class="type">Person</span> { <span class="kw">public string</span> Name; <span class="kw">public int</span> Age; }
 
-                <span class="cmt">// 使用泛型方法获取任意类型数组</span>
-                <span class="type">int</span>[] intValues = myConfig[<span class="str">"Section"</span>][<span class="str">"IntArray"</span>].<span class="fn">GetValueArray</span>&lt;<span class="type">int</span>&gt;();
-                <span class="type">float</span>[] floatValues = myConfig[<span class="str">"Section"</span>][<span class="str">"IntArray"</span>].<span class="fn">GetValueArray</span>&lt;<span class="type">float</span>&gt;();
-            </div>
+            <span class="cmt">// Section → 对象</span>
+            <span class="type">Person</span> p = config[<span class="str">"Person"</span>].<span class="fn">ToObject</span>&lt;<span class="type">Person</span>&gt;();
 
-            <h3>5.3 枚举类型</h3>
-            <p>SharpConfig 可直接将配置值解析为枚举类型，只需确保配置文本与枚举名称匹配即可[reference:20]。</p>
+            <span class="cmt">// 对象 → Section</span>
+            <span class="kw">var</span> sec = <span class="type">Section</span>.<span class="fn">FromObject</span>(<span class="str">"NewPerson"</span>, <span class="kw">new</span> <span class="type">Person</span>{Name=<span class="str">"Alice"</span>, Age=<span class="num">30</span>});
+            config.<span class="fn">Add</span>(sec);
+        </div>
+    </section>
 
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="cmt">// 配置文件中: Day = Monday</span>
-                <span class="type">DayOfWeek</span> day = config[<span class="str">"General"</span>][<span class="str">"Day"</span>].<span class="fn">GetValue</span>&lt;<span class="type">DayOfWeek</span>&gt;();
-                <span class="cmt">// day == DayOfWeek.Monday</span>
-            </div>
-        </section>
+    <!-- API 参考 -->
+    <section id="api-reference" class="fade-section">
+        <h2>📚 API 参考</h2>
+        <h3>Configuration</h3>
+        <div class="table-wrap"><table><thead><tr><th>方法</th><th>说明</th></tr></thead><tbody>
+            <tr><td>LoadFromFile / LoadFromStream</td><td>加载文本配置</td></tr>
+            <tr><td>LoadFromBinaryFile / LoadFromBinaryStream</td><td>加载二进制配置</td></tr>
+            <tr><td>SaveToFile / SaveToBinaryFile</td><td>保存配置</td></tr>
+            <tr><td>this[string name]</td><td>获取或创建 Section</td></tr>
+        </tbody></table></div>
+        <h3>Section & Setting</h3>
+        <p>Section 通过索引器获取 Setting；Setting 提供大量强类型属性如 <code>IntValue</code>、<code>StringValueArray</code> 以及泛型方法 <code>GetValue&lt;T&gt;()</code>。</p>
+    </section>
 
-        <!-- ── 6. 对象映射 ──────────────────────────── -->
-        <section id="object-mapping">
-            <h2>🔄 对象映射</h2>
-            <p>
-                SharpConfig 支持将 Section 自动映射为 C# 对象，也支持将 C# 对象序列化为 Section。这是其最强大的特性之一，极大简化了配置与业务模型之间的转换[reference:21][reference:22]。
-            </p>
+    <!-- 全局选项 -->
+    <section id="options" class="fade-section">
+        <h2>⚙️ 全局选项</h2>
+        <div class="table-wrap"><table><thead><tr><th>选项</th><th>说明</th></tr></thead><tbody>
+            <tr><td><code>PreferredCommentChar</code></td><td>默认 '#'</td></tr>
+            <tr><td><code>ValidCommentChars</code></td><td>默认 { '#', ';' }</td></tr>
+            <tr><td><code>ArrayElementSeparator</code></td><td>默认 ','</td></tr>
+            <tr><td><code>IgnoreInlineComments</code></td><td>是否忽略行内注释</td></tr>
+        </tbody></table></div>
+        <div class="callout warning" style="border-left-color:var(--warning); background:#fff8e1;">
+            <strong>⚠️ 中文编码：</strong>加载/保存时建议指定 UTF-8 或 GB2312 编码。
+        </div>
+    </section>
 
-            <h3>6.1 Section → 对象</h3>
-            <p>假设我们有如下 Person 类和对应的 Section：</p>
+</main>
 
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="kw">public class</span> <span class="type">Person</span>
-                {
-                <span class="kw">public string</span> Name { <span class="kw">get</span>; <span class="kw">set</span>; }
-                <span class="kw">public int</span> Age { <span class="kw">get</span>; <span class="kw">set</span>; }
-                }
+<footer>
+    <p>基于 <a href="https://sharpconfig.org/">sharpconfig.org</a> 与 <a href="https://github.com/cdervis/SharpConfig">GitHub</a> 资料编写 · MIT 许可证</p>
+</footer>
 
-                <span class="cmt">// 从 Section 创建对象</span>
-                <span class="type">Person</span> person = config[<span class="str">"Person"</span>].<span class="fn">ToObject</span>&lt;<span class="type">Person</span>&gt;();
-                <span class="type">Console</span>.<span class="fn">WriteLine</span>($<span class="str">"{person.Name} is {person.Age} years old."</span>);
-            </div>
-
-            <h3>6.2 对象 → Section</h3>
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="kw">var</span> person = <span class="kw">new</span> <span class="type">Person</span> { Name = <span class="str">"Alice"</span>, Age = <span class="num">30</span> };
-
-                <span class="cmt">// 从对象创建 Section 并添加到配置中</span>
-                <span class="kw">var</span> section = <span class="type">Section</span>.<span class="fn">FromObject</span>(<span class="str">"Person"</span>, person);
-                config.<span class="fn">Add</span>(section);
-
-                <span class="cmt">// 保存到文件</span>
-                config.<span class="fn">SaveToFile</span>(<span class="str">"person.cfg"</span>);
-            </div>
-        </section>
-
-        <!-- ── 7. API 参考 ──────────────────────────── -->
-        <section id="api-reference">
-            <h2>📚 API 参考</h2>
-            <p>SharpConfig 的核心 API 围绕三个主要类展开：<code>Configuration</code>、<code>Section</code> 和 <code>Setting</code>[reference:23]。</p>
-
-            <h3>7.1 Configuration 类</h3>
-            <p>代表整个配置文件，包含一个或多个 Section[reference:24]。</p>
-
-            <table class="table-wrap">
-                <thead>
-                    <tr>
-                        <th>方法 / 属性</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>LoadFromFile(string path)</code></td><td>从文本文件加载配置[reference:25]</td></tr>
-                    <tr><td><code>LoadFromStream(Stream stream)</code></td><td>从文本流加载配置[reference:26]</td></tr>
-                    <tr><td><code>LoadFromString(string source)</code></td><td>从字符串加载配置[reference:27]</td></tr>
-                    <tr><td><code>LoadFromBinaryFile(string path)</code></td><td>从二进制文件加载配置[reference:28]</td></tr>
-                    <tr><td><code>LoadFromBinaryStream(Stream stream)</code></td><td>从二进制流加载配置[reference:29]</td></tr>
-                    <tr><td><code>SaveToFile(string path)</code></td><td>保存为文本文件[reference:30]</td></tr>
-                    <tr><td><code>SaveToStream(Stream stream)</code></td><td>保存为文本流[reference:31]</td></tr>
-                    <tr><td><code>SaveToBinaryFile(string path)</code></td><td>保存为二进制文件[reference:32]</td></tr>
-                    <tr><td><code>SaveToBinaryStream(Stream stream)</code></td><td>保存为二进制流[reference:33]</td></tr>
-                    <tr><td><code>this[string sectionName]</code></td><td>索引器，获取或创建 Section[reference:34]</td></tr>
-                    <tr><td><code>GetSectionsNamed(string name)</code></td><td>按名称查找 Section（默认忽略大小写）[reference:35]</td></tr>
-                    <tr><td><code>Add(Section section)</code></td><td>添加 Section[reference:36]</td></tr>
-                    <tr><td><code>Remove(Section section)</code></td><td>移除 Section</td></tr>
-                </tbody>
-            </table>
-
-            <h3>7.2 Section 类</h3>
-            <p>代表配置文件中的一个节（Section），包含多个 Setting[reference:37]。</p>
-
-            <table class="table-wrap">
-                <thead>
-                    <tr>
-                        <th>方法 / 属性</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>Name</code></td><td>Section 名称</td></tr>
-                    <tr><td><code>this[string settingName]</code></td><td>索引器，获取或创建 Setting</td></tr>
-                    <tr><td><code>Contains(string settingName)</code></td><td>检查是否包含指定 Setting[reference:38]</td></tr>
-                    <tr><td><code>Remove(string settingName)</code></td><td>移除指定 Setting[reference:39]</td></tr>
-                    <tr><td><code>ToObject&lt;T&gt;()</code></td><td>将 Section 映射为 C# 对象[reference:40]</td></tr>
-                    <tr><td><code>FromObject(string name, object obj)</code></td><td>从 C# 对象创建 Section[reference:41]</td></tr>
-                    <tr><td><code>GetSettingsNamed(string name)</code></td><td>按名称查找 Setting（支持大小写选项）[reference:42]</td></tr>
-                </tbody>
-            </table>
-
-            <h3>7.3 Setting 类</h3>
-            <p>代表单个配置项（键值对），提供多种强类型值访问属性[reference:43]。</p>
-
-            <table class="table-wrap">
-                <thead>
-                    <tr>
-                        <th>方法 / 属性</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>Name</code></td><td>Setting 名称</td></tr>
-                    <tr><td><code>StringValue</code></td><td>获取或设置字符串值[reference:44]</td></tr>
-                    <tr><td><code>IntValue</code></td><td>获取或设置 int 值[reference:45]</td></tr>
-                    <tr><td><code>FloatValue</code></td><td>获取或设置 float 值[reference:46]</td></tr>
-                    <tr><td><code>DoubleValue</code></td><td>获取或设置 double 值</td></tr>
-                    <tr><td><code>BoolValue</code></td><td>获取或设置 bool 值[reference:47]</td></tr>
-                    <tr><td><code>DateTimeValue</code></td><td>获取或设置 DateTime 值</td></tr>
-                    <tr><td><code>IntValueArray</code></td><td>获取或设置 int 数组[reference:48]</td></tr>
-                    <tr><td><code>StringValueArray</code></td><td>获取或设置 string 数组[reference:49]</td></tr>
-                    <tr><td><code>GetValue&lt;T&gt;()</code></td><td>泛型方法，获取指定类型的值（支持枚举等）[reference:50]</td></tr>
-                    <tr><td><code>GetValueArray&lt;T&gt;()</code></td><td>泛型方法，获取指定类型的数组[reference:51]</td></tr>
-                    <tr><td><code>GetValueArray(Type type)</code></td><td>非泛型方法，获取指定类型的数组[reference:52]</td></tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- ── 8. 全局选项 ──────────────────────────── -->
-        <section id="options">
-            <h2>⚙️ 全局选项配置</h2>
-            <p>
-                某些项目有特殊的配置文件格式需求。SharpConfig 通过 <code>Configuration</code> 类的静态属性提供了灵活的行为定制[reference:53]。
-            </p>
-
-            <table class="table-wrap">
-                <thead>
-                    <tr>
-                        <th>选项</th>
-                        <th>类型</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>CultureInfo</code></td>
-                        <td>CultureInfo</td>
-                        <td>值转换时使用的区域文化信息，默认为 <code>InvariantCulture</code>[reference:54]</td>
-                    </tr>
-                    <tr>
-                        <td><code>ValidCommentChars</code></td>
-                        <td>char[]</td>
-                        <td>有效的注释分隔字符数组，默认为 <code>{ '#', ';' }</code>[reference:55]</td>
-                    </tr>
-                    <tr>
-                        <td><code>PreferredCommentChar</code></td>
-                        <td>char</td>
-                        <td>保存配置时使用的首选注释字符，默认为 <code>'#'</code>[reference:56]</td>
-                    </tr>
-                    <tr>
-                        <td><code>ArrayElementSeparator</code></td>
-                        <td>char</td>
-                        <td>数组元素分隔符，默认为 <code>','</code>[reference:57]</td>
-                    </tr>
-                    <tr>
-                        <td><code>IgnoreInlineComments</code></td>
-                        <td>bool</td>
-                        <td>是否忽略行内注释（同一行中配置值后面的注释），默认为 <code>false</code>[reference:58]</td>
-                    </tr>
-                    <tr>
-                        <td><code>IgnorePreComments</code></td>
-                        <td>bool</td>
-                        <td>是否忽略前置注释（Section 或 Setting 上方的注释块），默认为 <code>false</code>[reference:59]</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>自定义注释与分隔符示例</h4>
-            <div class="code-block">
-                <span class="lang-tag">csharp</span>
-                <span class="cmt">// 修改注释字符为 ';'</span>
-                <span class="type">Configuration</span>.<span class="prop">PreferredCommentChar</span> = <span class="str">';'</span>;
-                <span class="type">Configuration</span>.<span class="prop">ValidCommentChars</span> = <span class="kw">new</span>[] { <span class="str">';'</span>, <span class="str">'#'</span> };
-
-                <span class="cmt">// 修改数组分隔符为 '|'</span>
-                <span class="type">Configuration</span>.<span class="prop">ArrayElementSeparator</span> = <span class="str">'|'</span>;
-
-                <span class="cmt">// 忽略所有行内注释</span>
-                <span class="type">Configuration</span>.<span class="prop">IgnoreInlineComments</span> = <span class="kw">true</span>;
-            </div>
-
-            <div class="callout warning">
-                <strong>⚠️ 编码提示：</strong>如果配置文件包含中文或非 ASCII 字符，建议在加载时显式指定编码，否则可能出现乱码。
-                例如：<code>Configuration.LoadFromFile("example.ini", Encoding.GetEncoding("gb2312"))</code>。
-                同样，保存时也务必使用相同的编码[reference:60]。
-            </div>
-        </section>
-
-        <!-- ── 9. 总结 ──────────────────────────────── -->
-        <section id="summary">
-            <h2>🏁 总结</h2>
-            <p>
-                SharpConfig 是一个设计精巧、使用简便的 .NET 配置管理库。它用极小的体积和零依赖的代价，提供了完整的 CFG/INI 文件读写能力，
-                并在此基础上扩展了强类型访问、数组支持、对象映射等实用功能。无论是小型工具还是大型企业应用，SharpConfig 都能胜任配置管理的需求。
-            </p>
-            <p>
-                其核心优势可以概括为：
-            </p>
-            <ul style="color: var(--text-secondary); padding-left: 24px; line-height: 2;">
-                <li><strong>极简 API：</strong>索引器 + 强类型属性，一目了然</li>
-                <li><strong>零依赖：</strong>不引入任何第三方包，减少项目复杂度</li>
-                <li><strong>全平台兼容：</strong>基于 .NET Standard 2.0，跨所有 .NET 运行时</li>
-                <li><strong>灵活可定制：</strong>注释字符、分隔符、文化信息均可配置</li>
-                <li><strong>开源免费：</strong>MIT 许可证，可自由使用和修改</li>
-            </ul>
-        </section>
-
-    </main>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  FOOTER                                     -->
-    <!-- ═══════════════════════════════════════════ -->
-    <footer>
-        <p>
-            本文档基于 <a href="https://sharpconfig.org/" target="_blank" rel="noopener">sharpconfig.org</a> 和
-            <a href="https://github.com/cdervis/SharpConfig" target="_blank" rel="noopener">GitHub 仓库</a> 的公开资料编写。
-            SharpConfig 采用 <strong>MIT 许可证</strong>发布。
-        </p>
-        <p style="margin-top: 6px;">© 2026 · 仅供学习参考使用</p>
-    </footer>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!--  SIMPLE NAVIGATION HIGHLIGHT SCRIPT         -->
-    <!-- ═══════════════════════════════════════════ -->
-    <script>
-        // Highlight active nav link based on scroll position
-        (function() {
-            const sections = document.querySelectorAll('section[id]');
-            const navLinks = document.querySelectorAll('.nav-inner a');
-            const offset = 100;
-
-            function onScroll() {
-                let currentId = '';
-                sections.forEach(section => {
-                    const top = section.getBoundingClientRect().top;
-                    if (top <= offset) {
-                        currentId = section.getAttribute('id');
-                    }
-                });
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
-                });
+<!-- ═══════════ 交互脚本 ═══════════ -->
+<script>
+    // 滚动渐显效果
+    const fadeSections = document.querySelectorAll('.fade-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
             }
+        });
+    }, { threshold: 0.15 });
+    fadeSections.forEach(sec => observer.observe(sec));
 
-            window.addEventListener('scroll', onScroll, { passive: true });
-            onScroll();
-        })();
-    </script>
+    // 导航高亮 + 导航栏阴影
+    const navBar = document.getElementById('navbar');
+    const navLinks = document.querySelectorAll('.nav-inner a');
+    window.addEventListener('scroll', () => {
+        // 阴影
+        navBar.classList.toggle('scrolled', window.scrollY > 10);
+        
+        // 高亮当前章节
+        let current = '';
+        document.querySelectorAll('section[id]').forEach(section => {
+            if (window.scrollY >= section.offsetTop - 120) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        });
+    });
+</script>
 
 </body>
 </html>
