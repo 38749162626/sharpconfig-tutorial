@@ -3,741 +3,679 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SharpConfig - .NET CFG/INI 配置库 · 完整教程</title>
-    <!-- 引入 Google Fonts 加快字体加载，提升视觉动感 -->
+    <title>SharpConfig · .NET 配置库完全指南</title>
+    <!-- 字体预加载 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400..600&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* 亮色主题变量 */
             --bg: #ffffff;
-            --bg-secondary: #f8f9fc;
-            --bg-code: #1a1b2e;
-            --text: #1a1a2e;
-            --text-secondary: #5a5a7a;
-            --text-code: #cdd6f4;
-            --accent: #6c5ce7;
-            --accent-hover: #5a4bd1;
-            --accent-light: #eef0ff;
-            --accent-glow: rgba(108, 92, 231, 0.3);
-            --border: #e2e4ef;
-            --border-light: #f0f0f8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --radius: 14px;
-            --radius-sm: 8px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.06);
-            --max-width: 1020px;
-            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --accent: #6366f1;
+            --accent-light: #eef2ff;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow: 0 4px 12px rgba(0,0,0,0.04);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.06);
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-bg: #ffffff;
+            --callout-bg: #eef2ff;
+            --callout-text: #3730a3;
+            --nav-bg: rgba(255,255,255,0.8);
+            --hero-gradient: linear-gradient(135deg, #1e1b4b 0%, #0f0f23 100%);
+            --hero-text: #ffffff;
+            --hero-sub: rgba(255,255,255,0.7);
+            --btn-outline-border: rgba(255,255,255,0.3);
+            --btn-outline-hover: rgba(255,255,255,0.1);
+            --table-hover: #f8fafc;
+            --max-width: 1050px;
             --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .dark {
+            --bg: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #818cf8;
+            --accent-light: #1e1b4b;
+            --accent-glow: rgba(129, 140, 248, 0.3);
+            --border: #334155;
+            --border-light: #1e293b;
+            --shadow: 0 4px 12px rgba(0,0,0,0.2);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.3);
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+            --card-bg: #1e293b;
+            --callout-bg: #1e1b4b;
+            --callout-text: #c7d2fe;
+            --nav-bg: rgba(15, 23, 42, 0.8);
+            --hero-gradient: linear-gradient(135deg, #0f0f23 0%, #1e1b4b 100%);
+            --hero-text: #ffffff;
+            --hero-sub: rgba(255,255,255,0.65);
+            --btn-outline-border: rgba(255,255,255,0.2);
+            --btn-outline-hover: rgba(255,255,255,0.08);
+            --table-hover: #1e293b;
         }
 
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 90px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
         body {
             font-family: var(--font-sans);
             color: var(--text);
-            background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+            background: var(--bg);
             line-height: 1.7;
             -webkit-font-smoothing: antialiased;
+            transition: background 0.3s, color 0.3s;
             overflow-x: hidden;
         }
 
-        /* ── 全局淡入动画 ──────────────── */
-        .fade-section {
-            opacity: 0;
-            transform: translateY(18px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
-            will-change: opacity, transform;
-        }
-        .fade-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ── Hero 动态背景与玻璃效果 ──────── */
-        .hero {
-            background: radial-gradient(ellipse 100% 60% at 50% 30%, #1e1b4b 0%, #0f0f23 60%);
-            color: #ffffff;
-            padding: 80px 24px 70px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            isolation: isolate;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-              radial-gradient(circle at 20% 80%, rgba(108,92,231,0.2) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 50%);
+        /* ── 粒子背景画布 ──────── */
+        #particleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
-            animation: heroPulse 8s infinite alternate;
+            z-index: 0;
+            opacity: 0.15;
         }
-        @keyframes heroPulse {
-            0% { opacity: 0.7; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.02); }
+        .dark #particleCanvas { opacity: 0.08; }
+
+        /* ── 返回顶部按钮 ──────── */
+        #backToTop {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 8px 20px var(--accent-glow);
+            z-index: 999;
+            pointer-events: none;
+        }
+        #backToTop.show {
+            opacity: 1; transform: translateY(0);
+            pointer-events: auto;
         }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            padding: 6px 20px;
-            font-size: 0.875rem;
-            letter-spacing: 0.02em;
+        /* ── 主题切换按钮 ──────── */
+        #themeToggle {
+            position: fixed;
+            top: 20px; right: 20px;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            z-index: 1000;
+            transition: background 0.3s, transform 0.2s;
+            backdrop-filter: blur(12px);
+        }
+        #themeToggle:hover { transform: scale(1.05); }
+
+        /* ── Hero 区域 ───────────── */
+        .hero {
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(12px);
-            animation: fadeInDown 0.8s ease;
+            background: var(--hero-gradient);
+            color: var(--hero-text);
+            padding: 100px 24px 80px;
+            text-align: center;
+            overflow: hidden;
         }
-        .hero-badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
-            animation: pulse-dot 2s infinite;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { box-shadow: 0 0 8px rgba(16,185,129,0.6); }
-            50% { box-shadow: 0 0 22px rgba(16,185,129,1); }
-        }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .hero h1 {
-            font-size: clamp(2.4rem, 6vw, 3.6rem);
+            font-size: clamp(2.6rem, 7vw, 4rem);
             font-weight: 800;
             letter-spacing: -0.03em;
-            margin: 24px 0 12px;
-            position: relative;
-            z-index: 1;
-            background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: fadeInUp 0.8s ease forwards;
-            opacity: 0;
         }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .hero p.subtitle {
-            font-size: 1.15rem;
-            color: rgba(255, 255, 255, 0.75);
-            max-width: 640px;
+            font-size: 1.2rem;
+            color: var(--hero-sub);
+            max-width: 650px;
             margin: 0 auto 32px;
-            position: relative;
-            z-index: 1;
-            line-height: 1.6;
-            animation: fadeInUp 0.8s 0.1s ease forwards;
-            opacity: 0;
         }
-
-        .hero-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-            animation: fadeInUp 0.8s 0.2s ease forwards;
-            opacity: 0;
-        }
-
+        .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 11px 26px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-decoration: none;
-            transition: all var(--transition);
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(8px);
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 12px 28px; border-radius: 50px;
+            font-weight: 600; font-size: 0.95rem;
+            text-decoration: none; transition: all 0.3s;
+            border: none; cursor: pointer; font-family: inherit;
         }
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .btn:hover::after {
-            opacity: 1;
-        }
-
         .btn-primary {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 4px 16px var(--accent-glow);
+            background: var(--accent); color: #fff;
+            box-shadow: 0 6px 20px var(--accent-glow);
         }
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(108,92,231,0.45);
-        }
-
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px var(--accent-glow); }
         .btn-outline {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            background: transparent; color: #fff;
+            border: 1.5px solid var(--btn-outline-border);
         }
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.6);
-            transform: translateY(-2px);
-        }
+        .btn-outline:hover { background: var(--btn-outline-hover); }
 
-        /* ── 粘性导航增加模糊与动态下划线 ── */
+        /* ── 导航栏 ──────────────── */
         .nav-bar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.8);
+            position: sticky; top: 0; z-index: 100;
+            background: var(--nav-bg);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            transition: box-shadow 0.3s;
+            transition: background 0.3s;
         }
-        .nav-bar.scrolled {
-            box-shadow: 0 4px 24px rgba(0,0,0,0.05);
-        }
-
         .nav-inner {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            padding: 0 24px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            max-width: var(--max-width); margin: 0 auto;
+            display: flex; align-items: center;
+            padding: 0 24px; gap: 4px;
+            overflow-x: auto; scrollbar-width: none;
         }
         .nav-inner::-webkit-scrollbar { display: none; }
-
         .nav-inner a {
-            display: inline-block;
-            padding: 15px 17px;
-            font-size: 0.875rem;
-            font-weight: 550;
-            color: var(--text-secondary);
-            text-decoration: none;
-            white-space: nowrap;
+            padding: 16px 16px; font-size: 0.875rem;
+            font-weight: 550; color: var(--text-secondary);
+            text-decoration: none; white-space: nowrap;
             border-bottom: 2px solid transparent;
-            transition: all var(--transition);
-            letter-spacing: 0.01em;
-            position: relative;
+            transition: all 0.3s;
         }
-        .nav-inner a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 15%;
-            width: 70%;
-            height: 2px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transition: transform 0.3s;
+        .nav-inner a:hover, .nav-inner a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        /* 汉堡菜单 (移动端) */
+        .menu-toggle {
+            display: none; background: none; border: none;
+            font-size: 1.6rem; color: var(--text); cursor: pointer;
+            padding: 12px; margin-left: auto;
         }
-        .nav-inner a:hover,
-        .nav-inner a.active {
-            color: var(--accent);
-            border-bottom-color: transparent;
-        }
-        .nav-inner a.active::after,
-        .nav-inner a:hover::after {
-            transform: scaleX(1);
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .nav-inner { flex-wrap: wrap; max-height: 0; overflow: hidden; transition: max-height 0.4s; }
+            .nav-inner.open { max-height: 500px; }
+            .nav-inner a { display: block; width: 100%; border-bottom: 1px solid var(--border); }
+            #themeToggle { top: 12px; right: 12px; }
         }
 
-        /* ── 主内容区 ──────────────────── */
+        /* ── 主容器 ──────────────── */
         .container {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: 50px 24px 80px;
+            max-width: var(--max-width); margin: 0 auto;
+            padding: 50px 24px 80px; position: relative; z-index: 1;
         }
 
-        section {
-            margin-bottom: 60px;
+        /* ── 内容区块动画 ────────── */
+        .fade-section {
+            opacity: 0; transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
         }
+        .fade-section.visible { opacity: 1; transform: translateY(0); }
 
         h2 {
-            font-size: 1.8rem;
-            font-weight: 750;
-            margin-bottom: 12px;
-            letter-spacing: -0.02em;
-            color: var(--text);
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--border-light);
-            position: relative;
-            display: inline-block;
+            font-size: 1.8rem; font-weight: 750; margin-bottom: 16px;
+            padding-bottom: 12px; border-bottom: 2px solid var(--border-light);
+            display: inline-block; position: relative;
         }
         h2::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 40%;
-            height: 2px;
-            background: var(--accent);
-            border-radius: 2px;
+            content: ''; position: absolute; bottom: -2px; left: 0;
+            width: 45%; height: 2px; background: var(--accent); border-radius: 2px;
         }
+        h3 { font-size: 1.35rem; margin: 32px 0 12px; }
 
-        h3 {
-            font-size: 1.35rem;
-            font-weight: 680;
-            margin: 36px 0 12px;
-        }
-
-        /* ── 功能卡片网格 + 悬停动感 ──── */
+        /* ── 功能卡片 ────────────── */
         .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin: 24px 0;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px; margin: 24px 0;
         }
         .feature-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 26px 22px;
-            transition: all 0.3s ease;
-            transform: translateY(0);
-            cursor: default;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; padding: 24px 20px;
+            transition: all 0.35s ease; transform: translateY(0);
+            box-shadow: var(--shadow);
         }
         .feature-card:hover {
             border-color: var(--accent);
-            box-shadow: 0 18px 38px rgba(108,92,231,0.08);
-            transform: translateY(-4px);
-            background: #ffffff;
+            box-shadow: 0 20px 40px rgba(99,102,241,0.1);
+            transform: translateY(-6px);
         }
+        .feature-card .icon { font-size: 2rem; margin-bottom: 10px; }
 
-        /* ── 代码块增加顶部光效 ────────── */
+        /* ── 代码块 + 复制按钮 ───── */
+        .code-wrapper { position: relative; margin: 20px 0; }
         .code-block {
-            background: var(--bg-code);
-            color: var(--text-code);
-            border-radius: var(--radius);
-            padding: 20px 24px;
-            margin: 20px 0;
-            overflow-x: auto;
-            font-family: var(--font-mono);
-            font-size: 0.875rem;
-            line-height: 1.7;
-            position: relative;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            transition: box-shadow 0.3s;
-        }
-        .code-block:hover {
-            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-        }
-        .code-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), #10b981, var(--accent));
-            opacity: 0.7;
-        }
-
-        .lang-tag {
-            position: absolute;
-            top: 12px;
-            right: 18px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: rgba(205,214,244,0.5);
-            font-family: var(--font-sans);
-            font-weight: 600;
-        }
-
-        /* 语法高亮 */
-        .kw { color: #cba6f7; font-weight: 600; }
-        .str { color: #a6e3a1; }
-        .cmt { color: #6c7086; font-style: italic; }
-        .num { color: #fab387; }
-        .fn { color: #89b4fa; }
-        .type { color: #f9e2af; }
-        .prop { color: #89dceb; }
-
-        /* ── 表格优化 ──────────────────── */
-        .table-wrap {
-            overflow-x: auto;
-            margin: 20px 0;
-            border-radius: var(--radius);
+            background: var(--code-bg); color: var(--code-text);
+            border-radius: 14px; padding: 20px 24px;
+            font-family: var(--font-mono); font-size: 0.9rem;
+            line-height: 1.7; overflow-x: auto;
+            white-space: pre-wrap; word-break: break-word;
+            box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
-            background: #fff;
-            box-shadow: var(--shadow);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            min-width: 600px;
+        .copy-btn {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #cbd5e1; border-radius: 8px;
+            padding: 5px 12px; font-size: 0.8rem;
+            cursor: pointer; transition: all 0.2s;
+            font-family: var(--font-sans);
         }
-        thead {
-            background: var(--bg-secondary);
-        }
-        th {
-            text-align: left;
-            padding: 14px 18px;
-            font-weight: 650;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-secondary);
-            border-bottom: 2px solid var(--border);
-        }
-        td {
-            padding: 12px 18px;
-            border-bottom: 1px solid var(--border-light);
-        }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td {
-            background: #fafaff;
-        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .copy-btn.copied { background: #10b981; border-color: #10b981; color: white; }
 
-        /* ── Callout 卡片 ────────────── */
+        /* ── 表格 ────────────────── */
+        .table-wrap {
+            overflow-x: auto; border-radius: 14px;
+            border: 1px solid var(--border); margin: 20px 0;
+            background: var(--card-bg); box-shadow: var(--shadow);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th {
+            background: var(--bg-tertiary); padding: 14px 18px;
+            text-align: left; font-weight: 650; text-transform: uppercase;
+            letter-spacing: 0.04em; font-size: 0.8rem; color: var(--text-secondary);
+            cursor: pointer; user-select: none;
+        }
+        th:hover { color: var(--accent); }
+        td { padding: 12px 18px; border-bottom: 1px solid var(--border-light); }
+        tr:hover td { background: var(--table-hover); }
+
+        /* ── 可折叠 FAQ ──────────── */
+        .faq-item {
+            border: 1px solid var(--border); border-radius: 12px;
+            margin-bottom: 12px; overflow: hidden;
+            background: var(--card-bg); transition: all 0.2s;
+        }
+        .faq-question {
+            padding: 16px 20px; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
+        }
+        .faq-question::after { content: '+'; font-size: 1.4rem; transition: transform 0.3s; }
+        .faq-item.open .faq-question::after { transform: rotate(45deg); }
+        .faq-answer {
+            max-height: 0; overflow: hidden; padding: 0 20px;
+            transition: max-height 0.4s ease, padding 0.4s;
+            color: var(--text-secondary);
+        }
+        .faq-item.open .faq-answer { max-height: 300px; padding: 0 20px 16px; }
+
+        /* ── Callout ─────────────── */
         .callout {
             border-left: 4px solid var(--accent);
-            background: #f5f3ff;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            padding: 16px 20px;
-            margin: 22px 0;
-            font-size: 0.95rem;
-            color: #3d356e;
-            animation: subtleGlow 3s infinite alternate;
-        }
-        @keyframes subtleGlow {
-            from { box-shadow: 0 0 0 rgba(108,92,231,0); }
-            to { box-shadow: 0 0 14px rgba(108,92,231,0.08); }
+            background: var(--callout-bg); color: var(--callout-text);
+            border-radius: 0 12px 12px 0; padding: 16px 20px;
+            margin: 20px 0; font-size: 0.95rem;
         }
 
-        /* ── 页脚 ────────────────────── */
+        /* ── 页脚 ────────────────── */
         footer {
-            text-align: center;
-            padding: 36px 24px;
+            text-align: center; padding: 40px 24px;
             border-top: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            background: #fafbff;
+            color: var(--text-secondary); font-size: 0.85rem;
+            position: relative; z-index: 1;
         }
-
-        /* ── 移动端适配加强 ──────────── */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 60px 18px 50px;
-            }
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .container {
-                padding: 32px 16px 48px;
-            }
-            .nav-inner a {
-                padding: 12px 11px;
-                font-size: 0.8rem;
-            }
-            .code-block {
-                padding: 16px 14px;
-                font-size: 0.8rem;
-            }
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        footer a { color: var(--accent); text-decoration: none; }
     </style>
 </head>
-<body>
+<body class="light">
+    <!-- 粒子背景 -->
+    <canvas id="particleCanvas"></canvas>
 
-<!-- ═══════════ HERO ═══════════ -->
-<header class="hero">
-    <span class="hero-badge"><span class="dot"></span> v4.1 · 2026年4月</span>
-    <h1>SharpConfig</h1>
-    <p class="subtitle">
-        简单、强大、轻量级的 .NET CFG/INI 配置库。<br>
-        文本与二进制格式，零依赖，完全可移植。
-    </p>
-    <div class="hero-links">
-        <a href="https://www.nuget.org/packages/sharpconfig/" class="btn btn-primary" target="_blank" rel="noopener">
-            📦 NuGet 安装
-        </a>
-        <a href="https://github.com/cdervis/SharpConfig" class="btn btn-outline" target="_blank" rel="noopener">
-            ⭐ GitHub 仓库
-        </a>
-        <a href="https://sharpconfig.org/" class="btn btn-outline" target="_blank" rel="noopener">
-            🌐 官方网站
-        </a>
-    </div>
-</header>
+    <!-- 主题切换 -->
+    <button id="themeToggle" aria-label="切换主题">🌓</button>
 
-<!-- ═══════════ 导航 ═══════════ -->
-<nav class="nav-bar" id="navbar">
-    <div class="nav-inner">
-        <a href="#overview">概览</a>
-        <a href="#features">功能特性</a>
-        <a href="#installation">安装</a>
-        <a href="#quickstart">快速入门</a>
-        <a href="#datatypes">数据类型</a>
-        <a href="#object-mapping">对象映射</a>
-        <a href="#api-reference">API 参考</a>
-        <a href="#options">全局选项</a>
-    </div>
-</nav>
+    <!-- 返回顶部 -->
+    <button id="backToTop" aria-label="返回顶部">↑</button>
 
-<main class="container">
+    <!-- 头部 -->
+    <header class="hero">
+        <h1>SharpConfig</h1>
+        <p class="subtitle">简单、强大、零依赖的 .NET CFG/INI 配置库。支持文本与二进制格式，跨平台运行，让配置操作变得像呼吸一样自然。</p>
+        <div class="hero-buttons">
+            <a href="https://www.nuget.org/packages/sharpconfig/" class="btn btn-primary" target="_blank">📦 NuGet 安装</a>
+            <a href="https://github.com/cdervis/SharpConfig" class="btn btn-outline" target="_blank">⭐ GitHub 仓库</a>
+            <a href="https://sharpconfig.org/" class="btn btn-outline" target="_blank">🌐 官网</a>
+        </div>
+    </header>
 
-    <!-- 概览 -->
-    <section id="overview" class="fade-section">
-        <h2>📖 项目概览</h2>
-        <p>
-            <strong>SharpConfig</strong> 是一个面向 .NET 平台的 CFG/INI 配置文件操作类库，由 <strong>Cem Dervis</strong> 创建并维护。
-            你可以使用它以<strong>文本或二进制格式</strong>读取、修改和保存配置文件及流。该库基于 <strong>.NET Standard 2.0</strong>，可在 Windows、Linux、macOS 及 Docker 中无缝运行。
-        </p>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <span style="font-size:1.6rem;">🧩</span>
-                <h4>零依赖</h4>
-                <p>不依赖任何第三方包，轻量纯净</p>
+    <!-- 导航 -->
+    <nav class="nav-bar" id="navbar">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="nav-inner" id="navLinks">
+            <a href="#overview">概览</a>
+            <a href="#features">特性</a>
+            <a href="#installation">安装</a>
+            <a href="#quickstart">快速入门</a>
+            <a href="#datatypes">数据类型</a>
+            <a href="#object-mapping">对象映射</a>
+            <a href="#api">API参考</a>
+            <a href="#options">全局选项</a>
+            <a href="#faq">常见问题</a>
+        </div>
+    </nav>
+
+    <!-- 主体内容 -->
+    <main class="container">
+        <!-- 概览 -->
+        <section id="overview" class="fade-section">
+            <h2>📖 项目概览</h2>
+            <p>SharpConfig 是 Cem Dervis 开发的 .NET 配置管理库，旨在用最少的代码实现 CFG/INI 文件的读取、修改和保存。它基于 .NET Standard 2.0，无任何第三方依赖，可在 Windows、Linux、macOS 上完美运行。</p>
+            <div class="feature-grid">
+                <div class="feature-card"><div class="icon">🧩</div><h4>零依赖</h4><p>不依赖任何外部包，轻量纯净。</p></div>
+                <div class="feature-card"><div class="icon">🌍</div><h4>完全可移植</h4><p>.NET Standard 2.0，跨所有平台。</p></div>
+                <div class="feature-card"><div class="icon">⚡</div><h4>高性能</h4><p>核心代码高度优化，解析速度飞快。</p></div>
+                <div class="feature-card"><div class="icon">🛡️</div><h4>类型安全</h4><p>强类型属性访问，自动转换。</p></div>
             </div>
-            <div class="feature-card">
-                <span style="font-size:1.6rem;">🌍</span>
-                <h4>完全可移植</h4>
-                <p>基于 .NET Standard 2.0，跨所有平台</p>
+        </section>
+
+        <!-- 功能特性 -->
+        <section id="features" class="fade-section">
+            <h2>✨ 核心特性</h2>
+            <div class="table-wrap">
+                <table id="featureTable">
+                    <thead><tr><th data-sort="string">特性</th><th data-sort="string">描述</th></tr></thead>
+                    <tbody>
+                        <tr><td>📄 CFG/INI 格式</td><td>完美支持节(Section)与键值对(Setting)，兼容传统配置文件。</td></tr>
+                        <tr><td>💬 注释支持</td><td>识别 # 和 ; 注释，支持忽略行内/前置注释。</td></tr>
+                        <tr><td>🔢 强类型值</td><td>通过 IntValue, FloatValue, BoolValue 等直接获取。</td></tr>
+                        <tr><td>🗂️ 数组</td><td>原生数组语法 { 1, 2, 3 }，提供强类型数组属性。</td></tr>
+                        <tr><td>🔣 枚举解析</td><td>GetValue<DayOfWeek>() 直接映射枚举。</td></tr>
+                        <tr><td>🔄 对象映射</td><td>Section 与 C# 对象双向自动转换。</td></tr>
+                        <tr><td>💾 多格式保存</td><td>支持文件/流/字符串加载，文本与二进制格式。</td></tr>
+                        <tr><td>🧠 动态创建</td><td>无需物理文件即可在内存中构建完整配置。</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="feature-card">
-                <span style="font-size:1.6rem;">⚡</span>
-                <h4>高性能</h4>
-                <p>核心代码精简，资源占用低</p>
+        </section>
+
+        <!-- 安装 -->
+        <section id="installation" class="fade-section">
+            <h2>📦 安装</h2>
+            <div class="code-wrapper">
+                <div class="code-block">dotnet add package sharpconfig</div>
+                <button class="copy-btn" data-copy>复制</button>
             </div>
-            <div class="feature-card">
-                <span style="font-size:1.6rem;">🔧</span>
-                <h4>丰富类型支持</h4>
-                <p>字符串、数值、布尔、数组、枚举、DateTime 等</p>
+            <div class="code-wrapper">
+                <div class="code-block">Install-Package sharpconfig</div>
+                <button class="copy-btn" data-copy>复制</button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 功能特性 -->
-    <section id="features" class="fade-section">
-        <h2>✨ 功能特性</h2>
-        <div class="table-wrap">
-            <table>
-                <thead><tr><th>特性</th><th>说明</th></tr></thead>
-                <tbody>
-                    <tr><td>📄 格式支持</td><td>标准 CFG/INI 格式，节(Section)与键值对(Setting)</td></tr>
-                    <tr><td>💬 注释</td><td>支持 # 和 ; 注释，可配置字符及忽略选项</td></tr>
-                    <tr><td>🔢 强类型访问</td><td>IntValue, FloatValue, BoolValue 等直接取值</td></tr>
-                    <tr><td>🗂️ 数组</td><td>原生支持数组，语法 { 1, 2, 3 }，强类型数组属性</td></tr>
-                    <tr><td>🔣 枚举</td><td>GetValue&lt;DayOfWeek&gt;() 直接解析枚举</td></tr>
-                    <tr><td>🔄 对象映射</td><td>Section ⇄ C# 对象双向转换</td></tr>
-                    <tr><td>💾 多种加载/保存</td><td>文件、流、字符串；文本与二进制格式</td></tr>
-                    <tr><td>🧠 内存创建</td><td>无需物理文件，直接动态构建配置</td></tr>
-                    <tr><td>🔍 大小写灵活</td><td>默认忽略大小写，也可精确匹配</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
+        <!-- 快速入门 -->
+        <section id="quickstart" class="fade-section">
+            <h2>🚀 快速入门</h2>
+            <p>假设我们有 <code>app.cfg</code> 文件：</p>
+            <div class="code-wrapper">
+                <div class="code-block">[General]
+SomeString = Hello World!
+SomeInteger = 10
+SomeFloat = 20.05
+SomeBoolean = true
+SomeArray = { 1, 2, 3 }
+Day = Monday</div>
+                <button class="copy-btn" data-copy>复制</button>
+            </div>
+            <p>读取配置：</p>
+            <div class="code-wrapper">
+                <div class="code-block">var config = Configuration.LoadFromFile("app.cfg");
+var section = config["General"];
 
-    <!-- 安装 -->
-    <section id="installation" class="fade-section">
-        <h2>📦 安装指南</h2>
-        <p>通过以下任一方式安装 SharpConfig：</p>
-        <h4>.NET CLI</h4>
-        <div class="code-block"><span class="lang-tag">shell</span>dotnet add package sharpconfig</div>
-        <h4>NuGet Package Manager</h4>
-        <div class="code-block"><span class="lang-tag">powershell</span>Install-Package sharpconfig</div>
-        <div class="callout">
-            <strong>💡 提示：</strong>安装后在代码文件顶部添加 <code>using SharpConfig;</code> 即可使用。
-        </div>
-    </section>
+string str = section["SomeString"].StringValue;
+int num = section["SomeInteger"].IntValue;
+float flt = section["SomeFloat"].FloatValue;
+bool flag = section["SomeBoolean"].BoolValue;
+int[] arr = section["SomeArray"].IntValueArray;
+DayOfWeek day = section["Day"].GetValue&lt;DayOfWeek&gt;();</div>
+                <button class="copy-btn" data-copy>复制</button>
+            </div>
+            <div class="callout">💡 索引器是“获取或创建”语义，访问不存在的键会自动创建，非常适合动态构建配置。</div>
+        </section>
 
-    <!-- 快速入门 -->
-    <section id="quickstart" class="fade-section">
-        <h2>🚀 快速入门</h2>
-        <p>假设配置文件 <code>sample.cfg</code> 内容如下：</p>
-        <div class="code-block">
-            <span class="lang-tag">ini</span>
-            <span class="cmt"># 注释</span>
-            <span class="kw">[General]</span>
-            <span class="prop">SomeString</span> = <span class="str">Hello World!</span>
-            <span class="prop">SomeInteger</span> = <span class="num">10</span>
-            <span class="prop">SomeFloat</span> = <span class="num">20.05</span>
-            <span class="prop">SomeBoolean</span> = <span class="kw">true</span>
-            <span class="prop">SomeArray</span> = { <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span> }
-            <span class="prop">Day</span> = <span class="str">Monday</span>
+        <!-- 数据类型 -->
+        <section id="datatypes" class="fade-section">
+            <h2>🔢 数据类型</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>属性</th><th>C# 类型</th><th>示例</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>StringValue</code></td><td>string</td><td>Hello</td></tr>
+                        <tr><td><code>IntValue</code></td><td>int</td><td>42</td></tr>
+                        <tr><td><code>FloatValue</code></td><td>float</td><td>3.14</td></tr>
+                        <tr><td><code>DoubleValue</code></td><td>double</td><td>2.71828</td></tr>
+                        <tr><td><code>BoolValue</code></td><td>bool</td><td>true</td></tr>
+                        <tr><td><code>DateTimeValue</code></td><td>DateTime</td><td>2026-05-01</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-            <span class="kw">[Person]</span>
-            <span class="prop">Name</span> = <span class="str">Peter</span>
-            <span class="prop">Age</span> = <span class="num">50</span>
-        </div>
+        <!-- 对象映射 -->
+        <section id="object-mapping" class="fade-section">
+            <h2>🔄 对象映射</h2>
+            <div class="code-wrapper">
+                <div class="code-block">class Person { public string Name; public int Age; }
 
-        <h4>读取配置</h4>
-        <div class="code-block">
-            <span class="lang-tag">csharp</span>
-            <span class="kw">var</span> config = <span class="type">Configuration</span>.<span class="fn">LoadFromFile</span>(<span class="str">"sample.cfg"</span>);
-            <span class="kw">var</span> section = config[<span class="str">"General"</span>];
+// Section → 对象
+Person p = config["Person"].ToObject&lt;Person&gt;();
 
-            <span class="type">string</span> someString = section[<span class="str">"SomeString"</span>].<span class="prop">StringValue</span>;
-            <span class="type">int</span> someInteger = section[<span class="str">"SomeInteger"</span>].<span class="prop">IntValue</span>;
-            <span class="type">float</span> someFloat = section[<span class="str">"SomeFloat"</span>].<span class="prop">FloatValue</span>;
-            <span class="type">bool</span> someBool = section[<span class="str">"SomeBoolean"</span>].<span class="prop">BoolValue</span>;
-            <span class="type">int</span>[] someIntArray = section[<span class="str">"SomeArray"</span>].<span class="prop">IntValueArray</span>;
-            <span class="type">DayOfWeek</span> day = section[<span class="str">"Day"</span>].<span class="fn">GetValue</span>&lt;<span class="type">DayOfWeek</span>&gt;();
-        </div>
+// 对象 → Section
+var sec = Section.FromObject("NewPerson", new Person{Name="Alice", Age=30});
+config.Add(sec);</div>
+                <button class="copy-btn" data-copy>复制</button>
+            </div>
+        </section>
 
-        <h4>内存创建配置</h4>
-        <div class="code-block">
-            <span class="lang-tag">csharp</span>
-            <span class="kw">var</span> myConfig = <span class="kw">new</span> <span class="type">Configuration</span>();
-            myConfig[<span class="str">"Video"</span>][<span class="str">"Width"</span>].<span class="prop">IntValue</span> = <span class="num">1920</span>;
-            myConfig[<span class="str">"Video"</span>][<span class="str">"Height"</span>].<span class="prop">IntValue</span> = <span class="num">1080</span>;
-            myConfig[<span class="str">"Video"</span>][<span class="str">"Formats"</span>].<span class="prop">StringValueArray</span> = <span class="kw">new</span>[] { <span class="str">"RGB32"</span>, <span class="str">"RGBA32"</span> };
-            myConfig[<span class="str">"Video"</span>][<span class="str">"Fullscreen"</span>].<span class="prop">BoolValue</span> = <span class="kw">true</span>;
-        </div>
-    </section>
+        <!-- API 参考 -->
+        <section id="api" class="fade-section">
+            <h2>📚 API 参考</h2>
+            <h3>Configuration 类</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>方法</th><th>说明</th></tr></thead>
+                    <tbody>
+                        <tr><td>LoadFromFile / LoadFromStream</td><td>加载文本配置</td></tr>
+                        <tr><td>LoadFromBinaryFile / LoadFromBinaryStream</td><td>加载二进制配置</td></tr>
+                        <tr><td>SaveToFile / SaveToBinaryFile</td><td>保存到文件</td></tr>
+                        <tr><td>this[string name]</td><td>获取或创建 Section</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>更多细节请查阅 <a href="https://github.com/cdervis/SharpConfig">官方文档</a>。</p>
+        </section>
 
-    <!-- 数据类型 -->
-    <section id="datatypes" class="fade-section">
-        <h2>🔢 数据类型详解</h2>
-        <h3>基本类型</h3>
-        <div class="table-wrap">
-            <table>
-                <thead><tr><th>属性</th><th>C# 类型</th><th>示例</th></tr></thead>
-                <tbody>
-                    <tr><td><code>StringValue</code></td><td>string</td><td>SomeString = Hello</td></tr>
-                    <tr><td><code>IntValue</code></td><td>int</td><td>SomeInteger = 10</td></tr>
-                    <tr><td><code>FloatValue</code></td><td>float</td><td>SomeFloat = 20.05</td></tr>
-                    <tr><td><code>DoubleValue</code></td><td>double</td><td>SomeDouble = 3.14</td></tr>
-                    <tr><td><code>BoolValue</code></td><td>bool</td><td>SomeBoolean = true</td></tr>
-                    <tr><td><code>DateTimeValue</code></td><td>DateTime</td><td>SomeDate = 2026-05-01</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <h3>数组与枚举</h3>
-        <div class="code-block">
-            <span class="lang-tag">csharp</span>
-            <span class="cmt">// 数组</span>
-            myConfig[<span class="str">"S"</span>][<span class="str">"Arr"</span>].<span class="prop">IntValueArray</span> = <span class="kw">new</span>[] { <span class="num">1</span>, <span class="num">2</span> };
-            <span class="type">int</span>[] vals = section[<span class="str">"Arr"</span>].<span class="fn">GetValueArray</span>&lt;<span class="type">int</span>&gt;();
+        <!-- 全局选项 -->
+        <section id="options" class="fade-section">
+            <h2>⚙️ 全局选项</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>属性</th><th>说明</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>PreferredCommentChar</code></td><td>首选注释字符，默认 '#'</td></tr>
+                        <tr><td><code>ValidCommentChars</code></td><td>有效注释字符数组</td></tr>
+                        <tr><td><code>ArrayElementSeparator</code></td><td>数组分隔符，默认 ','</td></tr>
+                        <tr><td><code>IgnoreInlineComments</code></td><td>忽略行内注释</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-            <span class="cmt">// 枚举</span>
-            <span class="type">DayOfWeek</span> day = section[<span class="str">"Day"</span>].<span class="fn">GetValue</span>&lt;<span class="type">DayOfWeek</span>&gt;();
-        </div>
-    </section>
+        <!-- 常见问题 (FAQ) -->
+        <section id="faq" class="fade-section">
+            <h2>❓ 常见问题</h2>
+            <div class="faq-item">
+                <div class="faq-question">配置文件中文乱码怎么办？</div>
+                <div class="faq-answer">保存时指定编码：<code>Configuration.LoadFromFile("app.ini", Encoding.UTF8)</code>。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">如何忽略所有注释？</div>
+                <div class="faq-answer">设置 <code>Configuration.IgnorePreComments = true;</code> 和 <code>IgnoreInlineComments = true;</code>。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">是否支持嵌套节？</div>
+                <div class="faq-answer">不支持。但可以通过命名约定（如 <code>[Parent.Child]</code>）模拟层级。</div>
+            </div>
+        </section>
+    </main>
 
-    <!-- 对象映射 -->
-    <section id="object-mapping" class="fade-section">
-        <h2>🔄 对象映射</h2>
-        <div class="code-block">
-            <span class="lang-tag">csharp</span>
-            <span class="kw">public class</span> <span class="type">Person</span> { <span class="kw">public string</span> Name; <span class="kw">public int</span> Age; }
+    <footer>
+        <p>© 2026 SharpConfig 教程 · 基于 MIT 许可证 · <a href="https://github.com/cdervis/SharpConfig">GitHub</a></p>
+    </footer>
 
-            <span class="cmt">// Section → 对象</span>
-            <span class="type">Person</span> p = config[<span class="str">"Person"</span>].<span class="fn">ToObject</span>&lt;<span class="type">Person</span>&gt;();
+    <script>
+        (function() {
+            // 粒子背景
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: null, y: null, radius: 100 };
 
-            <span class="cmt">// 对象 → Section</span>
-            <span class="kw">var</span> sec = <span class="type">Section</span>.<span class="fn">FromObject</span>(<span class="str">"NewPerson"</span>, <span class="kw">new</span> <span class="type">Person</span>{Name=<span class="str">"Alice"</span>, Age=<span class="num">30</span>});
-            config.<span class="fn">Add</span>(sec);
-        </div>
-    </section>
-
-    <!-- API 参考 -->
-    <section id="api-reference" class="fade-section">
-        <h2>📚 API 参考</h2>
-        <h3>Configuration</h3>
-        <div class="table-wrap"><table><thead><tr><th>方法</th><th>说明</th></tr></thead><tbody>
-            <tr><td>LoadFromFile / LoadFromStream</td><td>加载文本配置</td></tr>
-            <tr><td>LoadFromBinaryFile / LoadFromBinaryStream</td><td>加载二进制配置</td></tr>
-            <tr><td>SaveToFile / SaveToBinaryFile</td><td>保存配置</td></tr>
-            <tr><td>this[string name]</td><td>获取或创建 Section</td></tr>
-        </tbody></table></div>
-        <h3>Section & Setting</h3>
-        <p>Section 通过索引器获取 Setting；Setting 提供大量强类型属性如 <code>IntValue</code>、<code>StringValueArray</code> 以及泛型方法 <code>GetValue&lt;T&gt;()</code>。</p>
-    </section>
-
-    <!-- 全局选项 -->
-    <section id="options" class="fade-section">
-        <h2>⚙️ 全局选项</h2>
-        <div class="table-wrap"><table><thead><tr><th>选项</th><th>说明</th></tr></thead><tbody>
-            <tr><td><code>PreferredCommentChar</code></td><td>默认 '#'</td></tr>
-            <tr><td><code>ValidCommentChars</code></td><td>默认 { '#', ';' }</td></tr>
-            <tr><td><code>ArrayElementSeparator</code></td><td>默认 ','</td></tr>
-            <tr><td><code>IgnoreInlineComments</code></td><td>是否忽略行内注释</td></tr>
-        </tbody></table></div>
-        <div class="callout warning" style="border-left-color:var(--warning); background:#fff8e1;">
-            <strong>⚠️ 中文编码：</strong>加载/保存时建议指定 UTF-8 或 GB2312 编码。
-        </div>
-    </section>
-
-</main>
-
-<footer>
-    <p>基于 <a href="https://sharpconfig.org/">sharpconfig.org</a> 与 <a href="https://github.com/cdervis/SharpConfig">GitHub</a> 资料编写 · MIT 许可证</p>
-</footer>
-
-<!-- ═══════════ 交互脚本 ═══════════ -->
-<script>
-    // 滚动渐显效果
-    const fadeSections = document.querySelectorAll('.fade-section');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             }
-        });
-    }, { threshold: 0.15 });
-    fadeSections.forEach(sec => observer.observe(sec));
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
 
-    // 导航高亮 + 导航栏阴影
-    const navBar = document.getElementById('navbar');
-    const navLinks = document.querySelectorAll('.nav-inner a');
-    window.addEventListener('scroll', () => {
-        // 阴影
-        navBar.classList.toggle('scrolled', window.scrollY > 10);
-        
-        // 高亮当前章节
-        let current = '';
-        document.querySelectorAll('section[id]').forEach(section => {
-            if (window.scrollY >= section.offsetTop - 120) {
-                current = section.getAttribute('id');
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 1.5 + 0.5;
+                }
+                update() {
+                    if (mouse.x && mouse.y) {
+                        const dx = this.x - mouse.x;
+                        const dy = this.y - mouse.y;
+                        const dist = Math.sqrt(dx*dx+dy*dy);
+                        if (dist < mouse.radius) {
+                            const force = (mouse.radius - dist) / mouse.radius;
+                            this.vx += dx * force * 0.002;
+                            this.vy += dy * force * 0.002;
+                        }
+                    }
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx *= 0.99; this.vy *= 0.99;
+                    if (this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height) this.reset();
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#6366f1';
+                    ctx.fill();
+                }
             }
-        });
-        navLinks.forEach(link => {
-            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
-        });
-    });
-</script>
 
+            for (let i=0; i<80; i++) particles.push(new Particle());
+            function animateParticles() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            window.addEventListener('mousemove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+
+            // 主题切换
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                themeToggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌓';
+            });
+
+            // 返回顶部
+            const backBtn = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                backBtn.classList.toggle('show', window.scrollY > 400);
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 10) nav.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
+                else nav.style.boxShadow = 'none';
+            });
+            backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+            // 导航高亮
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-inner a');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(s => {
+                    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+                });
+            });
+
+            // 移动端菜单
+            const menuToggle = document.getElementById('menuToggle');
+            const navInner = document.getElementById('navLinks');
+            menuToggle.addEventListener('click', () => navInner.classList.toggle('open'));
+
+            // 滚动渐显
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => e.target.classList.toggle('visible', e.isIntersecting));
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.fade-section').forEach(s => observer.observe(s));
+
+            // 代码复制
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const code = btn.previousElementSibling.textContent;
+                    navigator.clipboard.writeText(code).then(() => {
+                        btn.textContent = '已复制';
+                        btn.classList.add('copied');
+                        setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+                    });
+                });
+            });
+
+            // FAQ 折叠
+            document.querySelectorAll('.faq-question').forEach(q => {
+                q.addEventListener('click', () => q.parentElement.classList.toggle('open'));
+            });
+
+            // 表格排序（简单实现）
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const table = th.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const index = Array.from(th.parentElement.children).indexOf(th);
+                    const ascending = th.dataset.sortOrder !== 'asc';
+                    rows.sort((a, b) => {
+                        const aVal = a.children[index].textContent.trim();
+                        const bVal = b.children[index].textContent.trim();
+                        return ascending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                    });
+                    rows.forEach(row => tbody.appendChild(row));
+                    th.dataset.sortOrder = ascending ? 'asc' : 'desc';
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
